@@ -3,6 +3,7 @@
 <style>
 
 .county { fill: none; pointer-events: all }
+.county.show { fill: #eef }
 .borders { fill: none; stroke: black; stroke-width: .5px }
 .popup { display: none }
 .show .popup { display: block }
@@ -87,17 +88,19 @@ async function main() {
   let gPopup = gCounty.append('g')
       .classed('popup', true)
       .attr('id', (d) => `popup-${d.properties.id}`)
-      .attr('transform', (d) => `translate(${path.centroid(d)})`)
+      .attr('transform', (d) => `translate(${path.centroid(d)}) translate(0,10)`)
 
   gPopup.append('rect')
       .attr('width', popupWidth)
       .attr('height', popupHeight)
+      .attr('x', -popupWidth/2)
       .attr('rx', 5)
       .attr('ry', 5)
 
   gPopup.append('foreignObject')
       .attr('width', popupWidth)
       .attr('height', popupHeight)
+      .attr('x', -popupWidth/2)
       .append('xhtml:body')
         .html((d) => `<iframe src="judete/${siruta[d.properties.id]}.html">`)
 }
