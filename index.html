@@ -4,6 +4,8 @@
 
 .county { fill: white }
 .borders { fill: none; stroke: black; stroke-width: .5px }
+.popup { display: none }
+.popup.popup-show { display: block }
 
 </style>
 <body>
@@ -48,6 +50,13 @@ async function main() {
   let siruta = await getJson('siruta.json')
   let judeteFeatures = topojson.feature(judete, judete.objects.judete).features
 
+  function toggler(show) {
+    return function(d) {
+      d3.select(`#popup-${d.properties.id}`)
+        .classed('popup-show', show)
+    }
+  }
+
   svg.append('g')
     .selectAll('.county')
       .data(judeteFeatures)
@@ -55,19 +64,21 @@ async function main() {
       .classed('county', true)
       .attr('id', (d) => `judet-${d.properties.id}`)
       .attr('d', path)
+      .on('mouseover', toggler(true))
+      .on('mouseout', toggler(false))
 
   svg.append('g')
     .selectAll('.popup')
       .data(judeteFeatures)
     .enter().append('g')
       .classed('popup', true)
+      .attr('id', (d) => `popup-${d.properties.id}`)
       .attr('transform', (d) => `translate(${path.centroid(d)})`)
       .append('foreignObject')
-        .attr('class', 'node')
         .attr('width', 100)
         .attr('height', 100)
         .append('xhtml:body')
-          .text((d) => siruta[d.properties.id])
+          .html((d) => `<iframe src="judete/${siruta[d.properties.id]}.html">`)
 
   svg.append('path')
       .datum(topojson.mesh(judete, judete.objects.judete, (a, b) => a !== b))
