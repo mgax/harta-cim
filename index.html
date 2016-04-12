@@ -24,8 +24,8 @@
 let width = 600
 let height = 600
 
-let popupWidth = 100
-let popupHeight = 100
+let popupWidth = 200
+let popupHeight = 150
 
 let quantize = d3.scale.quantize()
     .domain([0, .15])
@@ -102,7 +102,10 @@ async function main() {
       .attr('height', popupHeight)
       .attr('x', -popupWidth/2)
       .append('xhtml:body')
-        .html((d) => `<iframe src="judete/${siruta[d.properties.id]}.html">`)
+        .html((d) => `
+          <h2>${siruta[d.properties.id]}</h2>
+          <iframe src="judete/${siruta[d.properties.id]}.html">
+        `)
 }
 
 main().catch((e) => { console.error(e.stack || e) })
