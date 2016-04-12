@@ -1,0 +1,70 @@
+<!doctype html>
+<meta charset="utf-8">
+<style>
+
+.county { fill: none }
+.borders { fill: none; stroke: black; stroke-width: .5px }
+
+</style>
+<body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser-polyfill.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.16/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/1.6.20/topojson.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/0.11.0/fetch.min.js"></script>
+<script type="text/babel">
+
+let width = 600
+let height = 600
+
+let quantize = d3.scale.quantize()
+    .domain([0, .15])
+    .range(d3.range(9).map(function(i) { return 'q' + i + '-9' }))
+
+let projection = d3.geo.stereographic()
+    .scale(8000)
+    .translate([width / 2, height / 2])
+    .rotate([-25, -46])
+
+let path = d3.geo.path()
+    .projection(projection)
+
+let svg = d3.select('body').append('svg')
+    .attr('width', width)
+    .attr('height', height)
+
+function getJson(url) {
+  return new Promise((resolve, reject) => {
+    d3.json(url, (err, res) => {
+      if(err) return reject(err)
+      resolve(res)
+    })
+  })
+}
+
+async function main() {
+  let judete = await getJson('judete.topojson')
+
+  svg.append('g')
+      .attr('class', 'counties')
+    .selectAll('path')
+      .data(topojson.feature(judete, judete.objects.judete).features)
+    .enter().append('path')
+      .classed('county', true)
+      .attr('d', path)
+
+  svg.append('path')
+      .datum(topojson.mesh(judete, judete.objects.judete, (a, b) => a !== b))
+      .attr('class', 'borders')
+      .attr('d', path)
+
+  svg.append('path')
+      .datum(topojson.merge(judete, judete.objects.judete.geometries))
+      .attr('class', 'borders')
+      .attr('d', path)
+}
+
+main().catch((e) => { console.error(e.stack || e) })
+
+</script>
