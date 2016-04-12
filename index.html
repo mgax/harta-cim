@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <style>
 
-.county { fill: none }
+.county { fill: white }
 .borders { fill: none; stroke: black; stroke-width: .5px }
 
 </style>
@@ -45,14 +45,24 @@ function getJson(url) {
 
 async function main() {
   let judete = await getJson('judete.topojson')
+  let siruta = await getJson('siruta.json')
+  let judeteFeatures = topojson.feature(judete, judete.objects.judete).features
 
   svg.append('g')
-      .attr('class', 'counties')
-    .selectAll('path')
-      .data(topojson.feature(judete, judete.objects.judete).features)
+    .selectAll('.county')
+      .data(judeteFeatures)
     .enter().append('path')
       .classed('county', true)
+      .attr('id', (d) => `judet-${d.properties.id}`)
       .attr('d', path)
+
+  svg.append('g')
+    .selectAll('.popup')
+      .data(judeteFeatures)
+    .enter().append('text')
+      .classed('popup', true)
+      .attr('transform', (d) => `translate(${path.centroid(d)})`)
+      .text((d) => siruta[d.properties.id])
 
   svg.append('path')
       .datum(topojson.mesh(judete, judete.objects.judete, (a, b) => a !== b))
