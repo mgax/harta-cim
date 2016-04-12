@@ -2,10 +2,13 @@
 <meta charset="utf-8">
 <style>
 
-.county { fill: white }
+.county { fill: none; pointer-events: all }
 .borders { fill: none; stroke: black; stroke-width: .5px }
 .popup { display: none }
-.popup.popup-show { display: block }
+.show .popup { display: block }
+.popup rect { fill: white; stroke: blue; stroke-width: 1px }
+.popup iframe { border: none; width: 100%; height: 100% }
+.popup iframe body { z-index: 100; background: blue }
 
 </style>
 <body>
@@ -19,6 +22,9 @@
 
 let width = 600
 let height = 600
+
+let popupWidth = 100
+let popupHeight = 100
 
 let quantize = d3.scale.quantize()
     .domain([0, .15])
@@ -52,33 +58,9 @@ async function main() {
 
   function toggler(show) {
     return function(d) {
-      d3.select(`#popup-${d.properties.id}`)
-        .classed('popup-show', show)
+      d3.select(this).classed('show', show)
     }
   }
-
-  svg.append('g')
-    .selectAll('.county')
-      .data(judeteFeatures)
-    .enter().append('path')
-      .classed('county', true)
-      .attr('id', (d) => `judet-${d.properties.id}`)
-      .attr('d', path)
-      .on('mouseover', toggler(true))
-      .on('mouseout', toggler(false))
-
-  svg.append('g')
-    .selectAll('.popup')
-      .data(judeteFeatures)
-    .enter().append('g')
-      .classed('popup', true)
-      .attr('id', (d) => `popup-${d.properties.id}`)
-      .attr('transform', (d) => `translate(${path.centroid(d)})`)
-      .append('foreignObject')
-        .attr('width', 100)
-        .attr('height', 100)
-        .append('xhtml:body')
-          .html((d) => `<iframe src="judete/${siruta[d.properties.id]}.html">`)
 
   svg.append('path')
       .datum(topojson.mesh(judete, judete.objects.judete, (a, b) => a !== b))
@@ -89,6 +71,35 @@ async function main() {
       .datum(topojson.merge(judete, judete.objects.judete.geometries))
       .attr('class', 'borders')
       .attr('d', path)
+
+  let gCounty = svg.append('g')
+    .selectAll('.county')
+      .data(judeteFeatures)
+    .enter().append('g')
+      .classed('county', true)
+      .on('mouseover', toggler(true))
+      .on('mouseout', toggler(false))
+
+  gCounty.append('path')
+      .attr('id', (d) => `judet-${d.properties.id}`)
+      .attr('d', path)
+
+  let gPopup = gCounty.append('g')
+      .classed('popup', true)
+      .attr('id', (d) => `popup-${d.properties.id}`)
+      .attr('transform', (d) => `translate(${path.centroid(d)})`)
+
+  gPopup.append('rect')
+      .attr('width', popupWidth)
+      .attr('height', popupHeight)
+      .attr('rx', 5)
+      .attr('ry', 5)
+
+  gPopup.append('foreignObject')
+      .attr('width', popupWidth)
+      .attr('height', popupHeight)
+      .append('xhtml:body')
+        .html((d) => `<iframe src="judete/${siruta[d.properties.id]}.html">`)
 }
 
 main().catch((e) => { console.error(e.stack || e) })
