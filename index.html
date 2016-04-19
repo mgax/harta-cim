@@ -12,6 +12,7 @@ html, body, #map { height: 100%; margin: 0 }
 .judet-borders { fill: none; stroke: black; stroke-width: .4px }
 .modal-body iframe { border: none; width: 100%; height: 100% }
 #judete-data { display: none }
+.modal-footer .downloadLink { float: left }
 
 </style>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
@@ -82,6 +83,14 @@ async function main() {
           $('h4', modal).text(judetSiruta.name)
           let body = contentDiv.innerHTML
           $('.modal-body', modal).html(body)
+          let footer = ''
+          if(judetSiruta.gdriveId) {
+            let url = `https://drive.google.com/folderview`
+                    + `?id=${judetSiruta.gdriveId}&usp=drive_web`
+            footer = `Download <a href="${url}">`
+                   + `documente ${judetSiruta.name}</a>`
+          }
+          $('.modal-footer .downloadLink', modal).html(footer)
           modal.modal()
         })
         .attr('id', (d) => `judet-${d.properties.id}`)
@@ -140,6 +149,7 @@ main().catch((e) => { console.error(e.stack || e) })
         ...
       </div>
       <div class="modal-footer">
+        <p class="downloadLink"></p>
         <button type="button" class="btn btn-secondary" data-dismiss="modal">închide</button>
       </div>
     </div>
