@@ -7,7 +7,7 @@
 html, body, #map { height: 100%; margin: 0 }
 .feature { fill: #fffee8; pointer-events: all; cursor: pointer }
 .feature.hover { stroke: blue; fill: #eeebc2 }
-.feature text, .feature.hover text { stroke: none; fill: black }
+.featureLabel { pointer-events: none }
 .ro-borders { fill: none; stroke: black; stroke-width: .8px }
 .judet-borders { fill: none; stroke: black; stroke-width: .4px }
 .modal-body iframe { border: none; width: 100%; height: 100% }
@@ -66,10 +66,10 @@ async function main() {
     let path = d3.geo.path()
         .projection(projection)
 
-    let gFeature = svg.append('g')
+    svg.append('g')
       .selectAll('.feature')
         .data(topojson.feature(topo, topo.objects[objname]).features)
-      .enter().append('g')
+      .enter().append('path')
         .classed('feature', true)
         .on('mouseover', toggler(true))
         .on('mouseout', toggler(false))
@@ -82,12 +82,14 @@ async function main() {
           $('.modal-body', modal).html(body)
           modal.modal()
         })
-
-    gFeature.append('path')
         .attr('id', (d) => `judet-${d.properties.id}`)
         .attr('d', path)
 
-    gFeature.append('text')
+    svg.append('g')
+      .selectAll('.featureLabel')
+        .data(topojson.feature(topo, topo.objects[objname]).features)
+      .enter().append('text')
+        .classed('featureLabel', true)
         .attr('transform', (d) => `translate(${path.centroid(d)})`)
         .attr('text-anchor', 'middle')
         .attr('font-size', 12 * scale)
