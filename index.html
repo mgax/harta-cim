@@ -5,9 +5,9 @@
 <style>
 
 html, body, #map { height: 100%; margin: 0 }
-.county { fill: #fffee8; pointer-events: all; cursor: pointer }
-.county.hover { stroke: blue; fill: #eeebc2 }
-.county text, .county.hover text { stroke: none; fill: black }
+.feature { fill: #fffee8; pointer-events: all; cursor: pointer }
+.feature.hover { stroke: blue; fill: #eeebc2 }
+.feature text, .feature.hover text { stroke: none; fill: black }
 .ro-borders { fill: none; stroke: black; stroke-width: .8px }
 .judet-borders { fill: none; stroke: black; stroke-width: .4px }
 .modal-body iframe { border: none; width: 100%; height: 100% }
@@ -67,10 +67,10 @@ async function main() {
         .projection(projection)
 
     let gFeature = svg.append('g')
-      .selectAll('.county')
+      .selectAll('.feature')
         .data(topojson.feature(topo, topo.objects[objname]).features)
       .enter().append('g')
-        .classed('county', true)
+        .classed('feature', true)
         .on('mouseover', toggler(true))
         .on('mouseout', toggler(false))
         .on('click', (d) => {
