@@ -42,10 +42,6 @@ let projection = d3.geo.stereographic()
 let path = d3.geo.path()
     .projection(projection)
 
-let svg = d3.select('body').append('svg')
-    .attr('width', width)
-    .attr('height', height)
-
 function getJson(url) {
   return new Promise((resolve, reject) => {
     d3.json(url, (err, res) => {
@@ -56,6 +52,10 @@ function getJson(url) {
 }
 
 async function main() {
+  let svg = d3.select('body').append('svg')
+      .attr('width', width)
+      .attr('height', height)
+
   let judete = await getJson('judete.topojson')
   let siruta = await getJson('siruta.json')
   let judeteFeatures = topojson.feature(judete, judete.objects.judete).features
