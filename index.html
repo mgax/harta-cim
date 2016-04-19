@@ -1,3 +1,5 @@
+---
+---
 <!doctype html>
 <meta charset="utf-8">
 <style>
@@ -6,6 +8,7 @@
 .county.hover { stroke: blue }
 .borders { fill: none; stroke: black; stroke-width: .5px }
 .modal-body iframe { border: none; width: 100%; height: 100% }
+#judete-data { display: none }
 
 </style>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
@@ -82,8 +85,10 @@ async function main() {
       .on('mouseout', toggler(false))
       .on('click', (d) => {
         let modal = $('#modal-judet')
-        $('h4', modal).text(siruta[d.properties.id])
-        let body = `<iframe src="judete/${siruta[d.properties.id]}.html">`
+        let judetSiruta = siruta[d.properties.id]
+        $('h4', modal).text(judetSiruta)
+        let id = `judete/${judetSiruta}.html`
+        let body = document.getElementById(id).innerHTML
         $('.modal-body', modal).html(body)
         modal.modal()
       })
@@ -114,4 +119,14 @@ main().catch((e) => { console.error(e.stack || e) })
       </div>
     </div>
   </div>
+</div>
+
+<div id="judete-data">
+{% for page in site.pages %}
+  {% if page.is_judet %}
+  <div id="{{ page.path }}">
+    {{ page.content }}
+  </div>
+  {% endif %}
+{% endfor %}
 </div>
