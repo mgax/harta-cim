@@ -87,7 +87,7 @@ async function main() {
           if(judetSiruta.gdriveId) {
             let url = `https://drive.google.com/folderview`
                     + `?id=${judetSiruta.gdriveId}&usp=drive_web`
-            footer = `Download <a href="${url}">`
+            footer = `Download <a href="${url}" target="_blank">`
                    + `documente ${judetSiruta.name}</a>`
           }
           $('.modal-footer .downloadLink', modal).html(footer)
