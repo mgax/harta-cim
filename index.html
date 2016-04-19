@@ -41,14 +41,6 @@ async function main() {
       .domain([0, .15])
       .range(d3.range(9).map(function(i) { return 'q' + i + '-9' }))
 
-  let projection = d3.geo.stereographic()
-      .scale(10000 * scale)
-      .translate([width / 2, height / 2])
-      .rotate([-25, -45.95])
-
-  let path = d3.geo.path()
-      .projection(projection)
-
   function getJson(url) {
     return new Promise((resolve, reject) => {
       d3.json(url, (err, res) => {
@@ -62,9 +54,7 @@ async function main() {
       .attr('width', width)
       .attr('height', height)
 
-  let judete = await getJson('judete.topojson')
   let siruta = await getJson('siruta.json')
-  let judeteFeatures = topojson.feature(judete, judete.objects.judete).features
 
   function toggler(hover) {
     return function(d) {
@@ -72,42 +62,54 @@ async function main() {
     }
   }
 
-  let gCounty = svg.append('g')
-    .selectAll('.county')
-      .data(judeteFeatures)
-    .enter().append('g')
-      .classed('county', true)
-      .on('mouseover', toggler(true))
-      .on('mouseout', toggler(false))
-      .on('click', (d) => {
-        let modal = $('#modal-judet')
-        let judetSiruta = siruta[d.properties.id].short
-        $('h4', modal).text(judetSiruta)
-        let id = `judete/${judetSiruta}.html`
-        let body = document.getElementById(id).innerHTML
-        $('.modal-body', modal).html(body)
-        modal.modal()
-      })
+  function layer(topo, objname, projection) {
+    let path = d3.geo.path()
+        .projection(projection)
 
-  gCounty.append('path')
-      .attr('id', (d) => `judet-${d.properties.id}`)
-      .attr('d', path)
+    let gFeature = svg.append('g')
+      .selectAll('.county')
+        .data(topojson.feature(topo, topo.objects[objname]).features)
+      .enter().append('g')
+        .classed('county', true)
+        .on('mouseover', toggler(true))
+        .on('mouseout', toggler(false))
+        .on('click', (d) => {
+          let modal = $('#modal-judet')
+          let judetSiruta = siruta[d.properties.id].short
+          $('h4', modal).text(judetSiruta)
+          let id = `judete/${judetSiruta}.html`
+          let body = document.getElementById(id).innerHTML
+          $('.modal-body', modal).html(body)
+          modal.modal()
+        })
 
-  gCounty.append('text')
-      .attr('transform', (d) => `translate(${path.centroid(d)})`)
-      .attr('text-anchor', 'middle')
-      .attr('font-size', 12 * scale)
-      .text((d) => siruta[d.properties.id].code)
+    gFeature.append('path')
+        .attr('id', (d) => `judet-${d.properties.id}`)
+        .attr('d', path)
 
-  svg.append('path')
-      .datum(topojson.mesh(judete, judete.objects.judete, (a, b) => a !== b))
-      .attr('class', 'judet-borders')
-      .attr('d', path)
+    gFeature.append('text')
+        .attr('transform', (d) => `translate(${path.centroid(d)})`)
+        .attr('text-anchor', 'middle')
+        .attr('font-size', 12 * scale)
+        .text((d) => siruta[d.properties.id].code)
 
-  svg.append('path')
-      .datum(topojson.merge(judete, judete.objects.judete.geometries))
-      .attr('class', 'ro-borders')
-      .attr('d', path)
+    svg.append('path')
+        .datum(topojson.mesh(topo, topo.objects[objname], (a, b) => a !== b))
+        .attr('class', 'judet-borders')
+        .attr('d', path)
+
+    svg.append('path')
+        .datum(topojson.merge(topo, topo.objects[objname].geometries))
+        .attr('class', 'ro-borders')
+        .attr('d', path)
+  }
+
+  let judete = await getJson('judete.topojson')
+  let judeteProjection = d3.geo.stereographic()
+      .scale(10000 * scale)
+      .translate([width / 2, height / 2])
+      .rotate([-25, -45.95])
+  layer(judete, 'judete', judeteProjection)
 }
 
 main().catch((e) => { console.error(e.stack || e) })
