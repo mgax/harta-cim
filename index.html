@@ -3,15 +3,12 @@
 <style>
 
 .county { fill: none; pointer-events: all }
-.county.show { fill: #eef }
+.county.hover { stroke: blue }
 .borders { fill: none; stroke: black; stroke-width: .5px }
-.popup { display: none }
-.show .popup { display: block }
-.popup rect { fill: white; stroke: blue; stroke-width: 1px }
-.popup iframe { border: none; width: 100%; height: 100% }
-.popup iframe body { z-index: 100; background: blue }
+.modal-body iframe { border: none; width: 100%; height: 100% }
 
 </style>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
 <body>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser-polyfill.min.js"></script>
@@ -19,6 +16,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.16/d3.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/1.6.20/topojson.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/0.11.0/fetch.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.1.1/js/tether.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/js/bootstrap.min.js" integrity="sha384-vZ2WRJMwsjRMW/8U7i6PWi6AlO1L79snBrmgiDpgIWJ82z8eA5lenwvxbMV1PAh7" crossorigin="anonymous"></script>
 <script type="text/babel">
 
 let width = 600
@@ -57,9 +57,9 @@ async function main() {
   let siruta = await getJson('siruta.json')
   let judeteFeatures = topojson.feature(judete, judete.objects.judete).features
 
-  function toggler(show) {
+  function toggler(hover) {
     return function(d) {
-      d3.select(this).classed('show', show)
+      d3.select(this).classed('hover', hover)
     }
   }
 
@@ -80,34 +80,38 @@ async function main() {
       .classed('county', true)
       .on('mouseover', toggler(true))
       .on('mouseout', toggler(false))
+      .on('click', (d) => {
+        let modal = $('#modal-judet')
+        $('h4', modal).text(siruta[d.properties.id])
+        let body = `<iframe src="judete/${siruta[d.properties.id]}.html">`
+        $('.modal-body', modal).html(body)
+        modal.modal()
+      })
 
   gCounty.append('path')
       .attr('id', (d) => `judet-${d.properties.id}`)
       .attr('d', path)
-
-  let gPopup = gCounty.append('g')
-      .classed('popup', true)
-      .attr('id', (d) => `popup-${d.properties.id}`)
-      .attr('transform', (d) => `translate(${path.centroid(d)}) translate(0,10)`)
-
-  gPopup.append('rect')
-      .attr('width', popupWidth)
-      .attr('height', popupHeight)
-      .attr('x', -popupWidth/2)
-      .attr('rx', 5)
-      .attr('ry', 5)
-
-  gPopup.append('foreignObject')
-      .attr('width', popupWidth)
-      .attr('height', popupHeight)
-      .attr('x', -popupWidth/2)
-      .append('xhtml:body')
-        .html((d) => `
-          <h2>${siruta[d.properties.id]}</h2>
-          <iframe src="judete/${siruta[d.properties.id]}.html">
-        `)
 }
 
 main().catch((e) => { console.error(e.stack || e) })
 
 </script>
+
+<div class="modal fade" id="modal-judet" tabindex="-1" role="dialog" aria-labelledby="modal-judet-label" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-judet-label">Modal title</h4>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">închide</button>
+      </div>
+    </div>
+  </div>
+</div>
