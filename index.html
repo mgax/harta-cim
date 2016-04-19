@@ -110,6 +110,13 @@ async function main() {
       .translate([width / 2, height / 2])
       .rotate([-25, -45.95])
   layer(judete, 'judete', judeteProjection)
+
+  let sectoareProjection = d3.geo.stereographic()
+      .scale(60000 * scale)
+      .translate([.9 * width, .2 * height])
+      .rotate([-26.09, -44.44])
+  let sectoare = await getJson('sectoare.topojson')
+  layer(sectoare, 'sectoare', sectoareProjection)
 }
 
 main().catch((e) => { console.error(e.stack || e) })
