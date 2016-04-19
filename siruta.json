@@ -41,10 +41,10 @@
   "40": {"code": "B",  "short": "bucuresti",       "name": "București"},
   "51": {"code": "CL", "short": "calarasi",        "name": "Călărași"},
   "52": {"code": "GR", "short": "giurgiu",         "name": "Giurgiu"},
-  "179141": {"code": "s1", "short": "sector1", "name": "București Sectorul 1"},
-  "179150": {"code": "s2", "short": "sector2", "name": "București Sectorul 2"},
-  "179169": {"code": "s3", "short": "sector3", "name": "București Sectorul 3"},
-  "179178": {"code": "s4", "short": "sector4", "name": "București Sectorul 4"},
-  "179187": {"code": "s5", "short": "sector5", "name": "București Sectorul 5"},
-  "179196": {"code": "s6", "short": "sector6", "name": "București Sectorul 6"}
+  "179141": {"code": "S1", "short": "sector1", "name": "București Sectorul 1"},
+  "179150": {"code": "S2", "short": "sector2", "name": "București Sectorul 2"},
+  "179169": {"code": "S3", "short": "sector3", "name": "București Sectorul 3"},
+  "179178": {"code": "S4", "short": "sector4", "name": "București Sectorul 4"},
+  "179187": {"code": "S5", "short": "sector5", "name": "București Sectorul 5"},
+  "179196": {"code": "S6", "short": "sector6", "name": "București Sectorul 6"}
 }
