@@ -74,11 +74,13 @@ async function main() {
         .on('mouseover', toggler(true))
         .on('mouseout', toggler(false))
         .on('click', (d) => {
-          let modal = $('#modal-judet')
           let judetSiruta = siruta[d.properties.id].short
-          $('h4', modal).text(judetSiruta)
           let id = `judete/${judetSiruta}.html`
-          let body = document.getElementById(id).innerHTML
+          let contentDiv = document.getElementById(id)
+          if(! contentDiv) return
+          let modal = $('#modal-judet')
+          $('h4', modal).text(judetSiruta)
+          let body = contentDiv.innerHTML
           $('.modal-body', modal).html(body)
           modal.modal()
         })
