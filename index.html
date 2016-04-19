@@ -26,37 +26,35 @@ html, body, #map { height: 100%; margin: 0 }
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/js/bootstrap.min.js" integrity="sha384-vZ2WRJMwsjRMW/8U7i6PWi6AlO1L79snBrmgiDpgIWJ82z8eA5lenwvxbMV1PAh7" crossorigin="anonymous"></script>
 <script type="text/babel">
 
-let width = 600
-let height = 420
-
-let popupWidth = 200
-let popupHeight = 150
-
-let quantize = d3.scale.quantize()
-    .domain([0, .15])
-    .range(d3.range(9).map(function(i) { return 'q' + i + '-9' }))
-
-let projection = d3.geo.stereographic()
-    .scale(10000)
-    .translate([width / 2, height / 2])
-    .rotate([-25, -45.95])
-
-let path = d3.geo.path()
-    .projection(projection)
-
-function getJson(url) {
-  return new Promise((resolve, reject) => {
-    d3.json(url, (err, res) => {
-      if(err) return reject(err)
-      resolve(res)
-    })
-  })
-}
-
 async function main() {
+  let baseWidth = 600
+  let baseHeight = 420
+
   let container = document.querySelector('#map')
-  let containerWidth = $(container).width()
-  let containerHeight = $(container).height()
+  let width = $(container).width()
+  let height = $(container).height()
+  let containerScale = d3.min([width / baseWidth, height / baseHeight])
+
+  let quantize = d3.scale.quantize()
+      .domain([0, .15])
+      .range(d3.range(9).map(function(i) { return 'q' + i + '-9' }))
+
+  let projection = d3.geo.stereographic()
+      .scale(10000 * containerScale)
+      .translate([width / 2, height / 2])
+      .rotate([-25, -45.95])
+
+  let path = d3.geo.path()
+      .projection(projection)
+
+  function getJson(url) {
+    return new Promise((resolve, reject) => {
+      d3.json(url, (err, res) => {
+        if(err) return reject(err)
+        resolve(res)
+      })
+    })
+  }
 
   let svg = d3.select(container).append('svg')
       .attr('width', width)
