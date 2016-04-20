@@ -125,8 +125,10 @@ async function main() {
   layer(judete, 'judete', judeteProjection)
 
   let sectoareProjection = d3.geo.stereographic()
-      .scale(60000 * scale)
-      .translate([.9 * width, .2 * height])
+      .scale(70000 * scale)
+      .translate([
+        width / 2 + .38 * baseWidth * scale,
+        height / 2 - .32 * baseHeight * scale])
       .rotate([-26.09, -44.44])
   let sectoare = await getJson('sectoare.topojson')
   layer(sectoare, 'sectoare', sectoareProjection)
